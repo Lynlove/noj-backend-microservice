@@ -27,6 +27,12 @@ public class QuestionInnerController implements QuestionFeignClient {
         return questionService.getById(questionId);
     }
 
+    @PostMapping("/question/update")
+    @Override
+    public boolean updateById(@RequestBody Question question){
+        return questionService.updateById(question);
+    }
+
     @GetMapping("/question_submit/get/id")
     @Override
     public QuestionSubmit getQuestionSubmitById(@RequestParam("questionSubmitId") long questionSubmitId){

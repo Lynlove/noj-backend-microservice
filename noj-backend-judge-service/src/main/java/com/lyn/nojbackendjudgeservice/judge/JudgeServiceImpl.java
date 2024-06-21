@@ -13,6 +13,7 @@ import com.lyn.nojbackendmodel.codesandbox.JudgeInfo;
 import com.lyn.nojbackendmodel.dto.question.JudgeCase;
 import com.lyn.nojbackendmodel.entity.Question;
 import com.lyn.nojbackendmodel.entity.QuestionSubmit;
+import com.lyn.nojbackendmodel.enums.JudgeInfoMessageEnum;
 import com.lyn.nojbackendmodel.enums.QuestionSubmitStatusEnum;
 import com.lyn.nojbackendserviceclient.service.QuestionFeignClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -69,6 +71,13 @@ public class JudgeServiceImpl implements JudgeService {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "判题状态更新失败");
         }
 
+        // 添加题目提交数
+        Question updateQuestion = new Question();
+        updateQuestion.setId(questionId);
+        Integer submitNum = Optional.ofNullable(question.getSubmitNum()).orElse(0);
+        question.setSubmitNum(submitNum + 1);
+        questionFeignClient.updateById(question);
+
         // 4）调用沙箱，执行代码，获取执行结果
         CodeSandbox codeSandBox = CodeSandboxFactory.newInstance(type);
         codeSandBox = new CodeSandboxProxy(codeSandBox);
@@ -103,6 +112,16 @@ public class JudgeServiceImpl implements JudgeService {
         if (!update) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "判题状态更新失败");
         }
+
+        // 如果答案正确，更新题目通过数
+        if (JudgeInfoMessageEnum.ACCEPTED.getValue().equals(judgeInfo.getMessage())) {
+            Integer acceptedNum = Optional.ofNullable(question.getAcceptedNum()).orElse(0);
+            updateQuestion = new Question();
+            updateQuestion.setId(questionId);
+            question.setAcceptedNum(acceptedNum + 1);
+            questionFeignClient.updateById(question);
+        }
+
         QuestionSubmit questionSubmitResult = questionFeignClient.getQuestionSubmitById(questionSubmitId);
         return questionSubmitResult;
     }
