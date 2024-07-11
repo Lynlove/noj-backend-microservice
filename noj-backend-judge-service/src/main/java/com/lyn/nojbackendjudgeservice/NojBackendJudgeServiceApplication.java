@@ -1,6 +1,5 @@
 package com.lyn.nojbackendjudgeservice;
 
-import com.lyn.nojbackendjudgeservice.rabbitmq.MqInitMain;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -20,8 +19,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class NojBackendJudgeServiceApplication {
 
     public static void main(String[] args) {
-        // 初始化消息队列
-        MqInitMain.doInit();
         SpringApplication.run(NojBackendJudgeServiceApplication.class, args);
     }
 

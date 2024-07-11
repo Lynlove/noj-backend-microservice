@@ -2,6 +2,8 @@
 
 改造前的springboot版：https://github.com/Lynlove/noj-backend
 
+代码沙箱：https://github.com/Lynlove/noj-code-sanbox
+
 ## 技术选型
 ### 前端
 - Vue3
